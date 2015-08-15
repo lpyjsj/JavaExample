@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:util="http://www.springframework.org/schema/util"
+    xmlns:p="http://www.springframework.org/schema/p"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+    http://www.springframework.org/schema/util
+    http://www.springframework.org/schema/util/spring-util-3.0.xsd">
+
+   <bean id="helloWorld" class="xml.HelloWorld">
+       <property name="message" value="Hello!"/>       
+       <property name="person" ref="person-construct"/>
+<!--          <ref bean="person-setter"></ref>
+       </property>   -->
+       <property name="person.firstName" value="Pony"/>   <!--级联属性  -->
+   </bean>
+   <!-- 属性注入 -->
+   <bean id="person-setter" class="xml.Person">
+     <property name="firstName" value="John"></property>
+     <property name="secondName" value="Simith"></property>
+   </bean>
+   <!-- 构造函数注入 -->
+   <bean id="person-construct" class="xml.Person">
+    <constructor-arg index="0" type="String" value="Jack"/>
+    <constructor-arg index="1" type="java.lang.String" value="Ma"/>
+   </bean>
+   <!-- p命名空间简化配置 -->
+    <bean id="person-p" class="xml.Person"
+        p:firstName="Tommy"
+        p:secondName="Chen"/>
+ 
+ <!-- 集合属性的配置-->
+ <bean id="person-collection" class="xml.Person">
+      <property name="firstName" value="Jim"/>
+      <property name="secondName" value="Green"/>
+      <property name="favorites">
+      <list>
+        <value>golf</value>
+        <value>reading</value>
+      </list>
+      </property>
+      <property name="friends">
+       <map>
+        <entry>
+        <key><value>Han</value> </key>
+        <value>Meimei</value>
+        </entry>
+        <entry>
+        <key><value>Li</value> </key>
+        <value>Lei</value>
+        </entry>
+       </map>
+      </property> 
+ </bean>
+ <!-- util空间配置集合 -->
+  <bean id="person-util" class="xml.Person">
+      <property name="firstName" value="Tom"/>
+      <property name="secondName" value="Gray"/>
+      <property name="favorites">
+      <util:list >
+       <value>golf</value>
+       <value>reading</value>
+      </util:list>
+      </property>
+      <property name="friends">
+      <util:map >
+        <entry key="Han" value="Meimei"/>
+        <entry key="Li" value="Lei"/>
+      </util:map>
+      </property>  
+ </bean>
+</beans>
