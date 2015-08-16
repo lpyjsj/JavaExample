@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:util="http://www.springframework.org/schema/util"
+    xmlns:p="http://www.springframework.org/schema/p"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+    http://www.springframework.org/schema/util
+    http://www.springframework.org/schema/util/spring-util-3.0.xsd
+    http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+    
+    <bean id="greetingBefore" class="springadvice.GreetingBeforeAdvice"/><!-- 前置增强 -->
+    <bean id="greetingAfter" class="springadvice.GreetingAfterAdvice"/><!-- 后置增强 -->
+    <bean id="greetingAround" class="springadvice.GreetingInterceptor"/><!--  环绕增强 -->
+    <bean id="introductionInterceptor" class="springadvice.FunnyBehavior"/><!-- 引介增强 -->
+    <bean id="target" class="springadvice.NaiveWaiter"/>
+    <bean id="waiter" class="org.springframework.aop.framework.ProxyFactoryBean"
+      p:proxyInterfaces="springadvice.Waiter"
+      p:interfaces="springadvice.FunnyFace"
+      p:interceptorNames="greetingAfter,greetingBefore,greetingAround,introductionInterceptor"
+      p:target-ref="target"
+      p:proxyTargetClass="true"/> <!-- 使用CGlib代理 -->
+      
+      
+   <!-- 正则表达式匹配切面 -->   
+   <bean id="regexpAdvisor" class="org.springframework.aop.support.RegexpMethodPointcutAdvisor"
+    p:advice-ref="greetingBefore">
+    <property name="patterns">
+    <list><value>.*greet.*</value> </list>
+    </property>
+   </bean>   
+      
+    <bean id="waiter-regexp" class="org.springframework.aop.framework.ProxyFactoryBean"
+      p:interceptorNames="regexpAdvisor"
+      p:target-ref="target"
+      p:proxyTargetClass="true"/> <!-- 使用CGlib代理 -->
+      
+    <!-- 流程切面 -->  
+    <bean id="controlFlowPointcut" class="org.springframework.aop.support.ControlFlowPointcut">
+     <constructor-arg type="java.lang.Class" value="springadvice.WaiterDelegate"/>
+     <constructor-arg type="java.lang.String" value="greetTo"/>
+    </bean>
+    <bean id="controlFlowAdvisor" class="org.springframework.aop.support.DefaultPointcutAdvisor"
+    p:pointcut-ref="controlFlowPointcut"
+    p:advice-ref="greetingAfter"/>
+    
+   <bean id="waiterFlow" class="org.springframework.aop.framework.ProxyFactoryBean"
+      p:interceptorNames="controlFlowAdvisor"
+      p:target-ref="target"
+      p:proxyTargetClass="true"/> <!-- 使用CGlib代理 -->  
+      
+    
+ </beans>
